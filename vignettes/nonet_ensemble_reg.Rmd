@@ -1,0 +1,145 @@
+---
+title: "nonet_ensemble regression with nonet_plot"
+output: html_vignette
+vignette: >
+  %\VignetteIndexEntry{nonet ensemble regression with nonet plot}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+### nonet provides ensemble capabilities for regression problems. 
+
+Below example shows the step by step implementation of nonet_ensemble and nonet_plot functions in the context of regression.
+We have used Bank Note authentication data set to predict the output class variable using linear regression model.
+Predictions from first linear regression model and second linear regression model are being used as inputs to the nonet_ensemble in the list form.
+
+Let's start:
+
+#### Load the required libraries
+
+```{r}
+library(caret)
+library(ggplot2)
+library(nonet)
+```
+
+#### Load the banknote_authentication dataset and explore it.
+```{r}
+dataframe <- data.frame(banknote_authentication)
+head(dataframe)
+```
+
+### First Linear Regression Model
+
+#### Splitting the data into train and test.
+```{r}
+index <- createDataPartition(dataframe$class, p=0.75, list=FALSE)
+trainSet <- dataframe[ index,]
+testSet <- dataframe[-index,]
+```
+
+### Feature selection using rfe in caret
+```{r}
+control <- rfeControl(functions = rfFuncs,
+  method = "repeatedcv",
+  repeats = 3,
+  verbose = FALSE)
+```
+
+
+```{r}
+outcomeName <- 'entropy'
+predictors <- c("variance", "skewness", "class")
+```
+
+#### Model Training
+```{r}
+banknote_lm_first <- train(trainSet[,predictors],trainSet[,outcomeName],method='lm')
+```
+
+#### Predictions on testSet
+```{r}
+predictions_lm_first <- predict.train(object=banknote_lm_first, testSet[,predictors])
+```
+
+### Second Linear Regression Model
+```{r}
+index <- createDataPartition(dataframe$class, p=0.75, list=FALSE)
+trainSet <- dataframe[ index,]
+testSet <- dataframe[-index,]
+```
+
+
+### Feature selection using rfe in caret
+```{r}
+control <- rfeControl(functions = rfFuncs,
+  method = "repeatedcv",
+  repeats = 3,
+  verbose = FALSE)
+```
+
+```{r}
+outcomeName <- 'entropy'
+predictors <- c("curtosis", "skewness", "class")
+```
+
+### Model Training
+```{r}
+banknote_lm_second <- train(trainSet[,predictors],trainSet[,outcomeName],method='lm')
+```
+
+### Predictions on testSet
+```{r}
+predictions_lm_second <- predict.train(object=banknote_lm_second, testSet[,predictors])
+```
+
+#### Create the stack of predictions
+```{r}
+Stack_object <- list(predictions_lm_first, predictions_lm_second)
+```
+#### Applying naming to the Stack_object
+```{r}
+names(Stack_object) <- c("lm_first", "lm_second")
+```
+#### nonet_ensemble
+Now we need to apply the nonet_ensemble method by supplying list object and best model name as input.
+Note that We have not provided training or test outcome labels to compute the weights in the weighted average ensemble method, which is being used inside the none_ensemble. Thus it uses best models prediction to compute the weights in the weighted average ensemble.
+```{r}
+prediction_nonet <- nonet_ensemble(Stack_object, "lm_first")
+```
+#### Creating the dataframe of nonet predictions and actual testSet labels to compute the accuracy
+```{r}
+Actual_Pred <- data.frame(cbind(actuals = testSet[,outcomeName], predictions = prediction_nonet))  
+head(Actual_Pred)
+```
+
+#### Evaluation Matrix
+```{r}
+accuracy <- cor(Actual_Pred)
+accuracy
+```
+#### Result Plotting: nonet_plot
+
+Results can be plotted using the nonet_plot function.
+nonet_plot is being designed to provided different plot_type options to the user so that one can plot different visualization based on their needs.
+
+##### nonet_plot in histogram for the Actual labels in the testSet 
+```{r, warning = FALSE}
+plot_first <- nonet_plot(Actual_Pred$actuals, Actual_Pred$predictions, Actual_Pred, plot_type = "hist")
+plot_first
+```
+
+##### nonet_plot in histogram for the nonet_ensemble predictions 
+```{r, warning = FALSE}
+plot_second <- nonet_plot(Actual_Pred$predictions, Actual_Pred$actuals, Actual_Pred, plot_type = "hist")
+plot_second
+```
+
+### Conclusion
+ 
+Above it can be seen that nonet_ensemble and nonet_plot can serve in a way that one do not need to worry about the outcome variables labels to compute the weights of weighted average ensemble solution. 
+
+
+
+
+

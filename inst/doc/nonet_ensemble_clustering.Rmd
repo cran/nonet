@@ -1,0 +1,242 @@
+---
+title: "nonet_ensemble Clustering with nonet_plot"
+output: html_vignette
+vignette: >
+  %\VignetteIndexEntry{nonet ensemble Clustering with nonet plot}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+### nonet provides ensemble capabilities for Clustering problems. 
+
+Below example shows the step by step implementation of nonet_ensemble and nonet_plot functions in the context of clustering.
+We have used Bank Note authentication data set to predict the output class variable using Cluster package because it provides the probability of the input point to be in a specific cluster.
+Predictions from first GMM and second GMM model are being used as inputs to the nonet_ensemble in the list form.
+
+Let's start:
+
+#### Load the required libraries
+
+
+```{r}
+library(caret)
+library(ggplot2)
+library(ClusterR)
+library(nonet)
+```
+
+##### Setting the seed
+```{r}
+set.seed(1001)
+```
+
+#### Load the banknote_authentication dataset and explore it.
+```{r}
+dataframe <- data.frame(banknote_authentication)
+```
+
+We can see above that class variable has int datatype, we need to convert it into factor.
+
+#### Converting datatype of class variable into factors.
+
+```{r}
+dataframe$class <- as.factor(dataframe$class)
+```
+
+### First GMM Model
+
+#### Splitting the data into train and test.
+```{r}
+#Spliting training set into two parts based on outcome: 75% and 25%
+index <- createDataPartition(dataframe$class, p=0.75, list=FALSE)
+trainSet <- dataframe[ index,]
+testSet <- dataframe[-index,]
+```
+
+#### Exploring the dimensions of trainSet and testSet
+```{r}
+dim(trainSet); dim(testSet)
+```
+
+```{r}
+str(trainSet)
+```
+
+```{r}
+str(testSet)
+```
+#Feature selection using rfe in caret
+```{r}
+control <- rfeControl(functions = rfFuncs,
+                   method = "repeatedcv",
+                   repeats = 3,
+                   verbose = FALSE)
+```
+
+```{r}
+outcomeName<-'class'
+predictors<-c("variance", "curtosis", "entropy")
+```
+
+
+```{r}
+head(trainSet[,predictors])
+```
+```{r}
+head(trainSet[,outcomeName])
+```
+
+#### Model Training
+
+```{r}
+set.seed(900)
+gmm_first <- GMM(trainSet[,predictors], 2, dist_mode = "maha_dist", seed_mode = "random_subset", km_iter = 10, em_iter = 10, verbose = F)          
+
+```
+
+#### #### Predictions using first GMM
+```{r}
+predict_clustering_first <- predict_GMM(trainSet[,predictors], gmm_first$centroids, gmm_first$covariance_matrices, gmm_first$weights) 
+head(predict_clustering_first$cluster_proba[, 2])
+```
+#### Converting probability into classes
+```{r}
+predict_cluster_first_class <- as.factor(ifelse(predict_clustering_first$cluster_proba[, 2] >= "0.5", "1", "0"))
+head(predict_cluster_first_class)
+```
+
+```{r}
+head(predict_clustering_first$cluster_labels)
+```
+
+### Second GMM Model
+
+#### Spliting training set into two parts based on outcome: 75% and 25%
+```{r}
+
+index <- createDataPartition(dataframe$class, p=0.75, list=FALSE)
+trainSet <- dataframe[ index,]
+testSet <- dataframe[-index,]
+```
+
+#### Exploring the dimensions of trainSet and testSet
+```{r}
+dim(trainSet); dim(testSet)
+```
+
+```{r}
+str(trainSet)
+```
+
+```{r}
+str(testSet)
+```
+#### Feature selection using rfe in caret
+```{r}
+control <- rfeControl(functions = rfFuncs,
+                   method = "repeatedcv",
+                   repeats = 3,
+                   verbose = FALSE)
+```
+
+```{r}
+outcomeName<-'class'
+predictors<-c("skewness", "curtosis", "entropy")
+```
+
+```{r}
+head(trainSet[,predictors])
+```
+```{r}
+head(trainSet[,outcomeName])
+```
+
+
+#### Model Training: Second
+```{r}
+set.seed(423)
+gmm_second <- GMM(trainSet[,predictors], 2, dist_mode = "maha_dist", seed_mode = "random_subset", km_iter = 10, em_iter = 10, verbose = F)          
+
+```
+
+
+#### Predictions using Second GMM
+```{r}
+predict_clustering_Second <- predict_GMM(trainSet[,predictors], gmm_second$centroids, gmm_second$covariance_matrices, gmm_second$weights) 
+head(predict_clustering_Second$cluster_proba[, 2])
+```
+#### Converting Prediction Probabilities into classes
+```{r}
+predict_cluster_Second_class <- as.factor(ifelse(predict_clustering_Second$cluster_proba[, 2] >= "0.5", "1", "0"))
+head(predict_cluster_Second_class)
+```
+
+```{r}
+head(predict_clustering_Second$cluster_labels)
+```
+
+#### Create the stack of predictions
+```{r}
+Stack_object <- list(predict_clustering_first$cluster_proba[, 2], predict_clustering_Second$cluster_proba[, 2])
+```
+#### Applying naming to the Stack_object
+```{r}
+names(Stack_object) <- c("Cluster_first", "Cluster_second")
+```
+
+#### nonet_ensemble
+Now we need to apply the nonet_ensemble method by supplying list object and best model name as input.
+Note that We have not provided training or test outcome labels to compute the weights in the weighted average ensemble method, which is being used inside the none_ensemble. Thus it uses best models prediction to compute the weights in the weighted average ensemble.
+```{r}
+prediction_nonet <- nonet_ensemble(Stack_object, "Cluster_second")
+```
+
+#### Result Plotting: nonet_plot
+
+Results can be plotted using the nonet_plot function.
+nonet_plot is being designed to provided different plot_type options to the user so that one can plot different visualization based on their needs.
+
+#### Creating the list of cluster probabilities
+```{r}
+Prediction_data <- list(prediction_nonet, predict_clustering_first$cluster_proba[, 2], predict_clustering_Second$cluster_proba[, 2])
+```
+
+
+#### Applying name to the predictions
+```{r}
+names(Prediction_data) <- c("pred_nonet", "pred_clust_first", "pred_clust_second")
+```
+
+#### Converting list object into dataframe
+```{r}
+Prediction_dataframe <- data.frame(Prediction_data)
+head(Prediction_dataframe)
+```
+
+##### nonet_plot for nonet_ensemble model's predictions in histogram
+```{r, warning = FALSE}
+plot_first <- nonet_plot(Prediction_dataframe$pred_nonet, Prediction_dataframe$pred_clust_first, Prediction_dataframe, plot_type = "hist")
+```
+
+```{r}
+plot_first
+```
+
+
+##### nonet_plot for the first GMM model's predictions in histogram
+```{r, warning = FALSE}
+plot_second <- nonet_plot(Prediction_dataframe$pred_clust_first,  Prediction_dataframe$pred_clust_second, Prediction_dataframe, plot_type = "hist")
+plot_second
+```
+
+##### nonet_plot for the Second GMM model's predictions in histogram
+```{r, warning = FALSE}
+plot_third <- nonet_plot(Prediction_dataframe$pred_clust_second,  Prediction_dataframe$pred_clust_first, Prediction_dataframe, plot_type = "hist")
+plot_third
+```
+
+
+### Conclusion
+ 
+Above it can be seen that nonet_ensemble and nonet_plot can serve in a way that one do not need to worry about the outcome variables labels to compute the weights of weighted average ensemble solution. 
+
+

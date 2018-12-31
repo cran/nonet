@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+<title>nonet_ensemble classification with nonet_plot</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">nonet_ensemble classification with nonet_plot</h1>
+
+
+
+<div id="nonet-provides-ensemble-capabilities-for-classification-problems." class="section level3">
+<h3>nonet provides ensemble capabilities for classification problems.</h3>
+<p>Below example shows the step by step implementation of nonet_ensemble and nonet_plot functions in the context of classification. We have used Bank Note authentication data set to predict the output class variable using random forest and neural network models. Predictions from random forest model and neural network model are being used as inputs to the nonet_ensemble in the list form.</p>
+<p>Let’s start:</p>
+<div id="load-the-required-libraries" class="section level4">
+<h4>Load the required libraries</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(caret)</code></pre></div>
+<pre><code>## Loading required package: lattice</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ggplot2)
+<span class="kw">library</span>(nonet)</code></pre></div>
+</div>
+<div id="load-the-banknote_authentication-dataset-and-explore-it." class="section level4">
+<h4>Load the banknote_authentication dataset and explore it.</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dataframe &lt;-<span class="st"> </span><span class="kw">data.frame</span>(banknote_authentication)
+<span class="kw">head</span>(dataframe)</code></pre></div>
+<pre><code>##   variance skewness curtosis  entropy class
+## 1  3.62160   8.6661  -2.8073 -0.44699     0
+## 2  4.54590   8.1674  -2.4586 -1.46210     0
+## 3  3.86600  -2.6383   1.9242  0.10645     0
+## 4  3.45660   9.5228  -4.0112 -3.59440     0
+## 5  0.32924  -4.4552   4.5718 -0.98880     0
+## 6  4.36840   9.6718  -3.9606 -3.16250     0</code></pre>
+<p>We can see above that class variable has int datatype, we need to convert it into factor so that classification models can be trained on that.</p>
+</div>
+<div id="converting-datatype-of-class-variable-into-factor-which-have-two-classes-yes-and-no." class="section level4">
+<h4>Converting datatype of class variable into factor which have two classes Yes and No.</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dataframe<span class="op">$</span>class &lt;-<span class="st"> </span><span class="kw">as.factor</span>(<span class="kw">ifelse</span>(dataframe<span class="op">$</span>class <span class="op">&gt;=</span><span class="st"> </span><span class="dv">1</span>, <span class="st">'Yes'</span>, <span class="st">'No'</span>))
+dataframe &lt;-<span class="st"> </span><span class="kw">data.frame</span>(dataframe)
+<span class="kw">head</span>(dataframe)</code></pre></div>
+<pre><code>##   variance skewness curtosis  entropy class
+## 1  3.62160   8.6661  -2.8073 -0.44699    No
+## 2  4.54590   8.1674  -2.4586 -1.46210    No
+## 3  3.86600  -2.6383   1.9242  0.10645    No
+## 4  3.45660   9.5228  -4.0112 -3.59440    No
+## 5  0.32924  -4.4552   4.5718 -0.98880    No
+## 6  4.36840   9.6718  -3.9606 -3.16250    No</code></pre>
+</div>
+<div id="spliting-the-dataset-into-train-and-test." class="section level4">
+<h4>Spliting the dataset into train and test.</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">index &lt;-<span class="st"> </span><span class="kw">createDataPartition</span>(dataframe<span class="op">$</span>class, <span class="dt">p=</span><span class="fl">0.75</span>, <span class="dt">list=</span><span class="ot">FALSE</span>)
+trainSet &lt;-<span class="st"> </span>dataframe[ index,]
+testSet &lt;-<span class="st"> </span>dataframe[<span class="op">-</span>index,]</code></pre></div>
+</div>
+<div id="feature-selection-using-rfe-in-caret" class="section level4">
+<h4>Feature selection using rfe in caret</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">control &lt;-<span class="st"> </span><span class="kw">rfeControl</span>(<span class="dt">functions =</span> rfFuncs,
+  <span class="dt">method =</span> <span class="st">&quot;repeatedcv&quot;</span>,
+  <span class="dt">repeats =</span> <span class="dv">3</span>,
+  <span class="dt">verbose =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">outcomeName &lt;-<span class="st"> 'class'</span>
+predictors &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;variance&quot;</span>, <span class="st">&quot;skewness&quot;</span>, <span class="st">&quot;curtosis&quot;</span>, <span class="st">&quot;entropy&quot;</span>)</code></pre></div>
+</div>
+<div id="model-training-random-forest" class="section level4">
+<h4>Model Training: Random forest</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">banknote_rf &lt;-<span class="st"> </span><span class="kw">train</span>(trainSet[,predictors],trainSet[,outcomeName],<span class="dt">method=</span><span class="st">'rf'</span>)</code></pre></div>
+</div>
+<div id="model-training-neural-network" class="section level4">
+<h4>Model Training: neural network</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">banknote_nnet &lt;-<span class="st"> </span><span class="kw">train</span>(trainSet[,predictors],trainSet[,outcomeName],<span class="dt">method=</span><span class="st">'nnet'</span>)</code></pre></div>
+<p>Now we need to predict the outcome on testSet using the trained models</p>
+</div>
+<div id="predictions-on-testset-in-probabilities" class="section level4">
+<h4>Predictions on testSet in probabilities</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">predictions_rf &lt;-<span class="st"> </span><span class="kw">predict.train</span>(<span class="dt">object=</span>banknote_rf,testSet[,predictors],<span class="dt">type=</span><span class="st">&quot;prob&quot;</span>)
+predictions_nnet &lt;-<span class="st"> </span><span class="kw">predict.train</span>(<span class="dt">object=</span>banknote_nnet,testSet[,predictors],<span class="dt">type=</span><span class="st">&quot;prob&quot;</span>)</code></pre></div>
+</div>
+<div id="predictions-on-testset-in-raw-form-i.e-in-levels" class="section level4">
+<h4>Predictions on testSet in raw form i.e in levels</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">predictions_rf_raw &lt;-<span class="st"> </span><span class="kw">predict.train</span>(<span class="dt">object=</span>banknote_rf,testSet[,predictors],<span class="dt">type=</span><span class="st">&quot;raw&quot;</span>)
+predictions_nnet_raw &lt;-<span class="st"> </span><span class="kw">predict.train</span>(<span class="dt">object=</span>banknote_nnet,testSet[,predictors],<span class="dt">type=</span><span class="st">&quot;raw&quot;</span>)</code></pre></div>
+</div>
+<div id="create-the-stack-of-prediction-probabilities-for-the-class-of-yes" class="section level4">
+<h4>Create the stack of prediction probabilities for the class of Yes</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Stack_object &lt;-<span class="st"> </span><span class="kw">list</span>(predictions_rf<span class="op">$</span>Yes, predictions_nnet<span class="op">$</span>Yes)</code></pre></div>
+</div>
+<div id="applying-naming-to-the-stack_object" class="section level4">
+<h4>Applying naming to the Stack_object</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">names</span>(Stack_object) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;model_rf&quot;</span>, <span class="st">&quot;model_nnet&quot;</span>)</code></pre></div>
+</div>
+<div id="convet-list-object-into-dataframe" class="section level4">
+<h4>Convet list object into dataframe</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Stack_object_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(Stack_object)</code></pre></div>
+</div>
+<div id="nonet_ensemble" class="section level4">
+<h4>nonet_ensemble</h4>
+<p>Now we need to apply the nonet_ensemble method by supplying list object and best model name as input. Note that We have not provided training or test outcome labels to compute the weights in the weighted average ensemble method, which is being used inside the none_ensemble. Thus it uses best models prediction to compute the weights in the weighted average ensemble.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">prediction_nonet_raw &lt;-<span class="st"> </span><span class="kw">nonet_ensemble</span>(Stack_object, <span class="st">&quot;model_nnet&quot;</span>)</code></pre></div>
+</div>
+<div id="convert-probabilities-into-factor-levels." class="section level4">
+<h4>Convert probabilities into factor levels.</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">prediction_nonet &lt;-<span class="st"> </span><span class="kw">as.factor</span>(<span class="kw">ifelse</span>(prediction_nonet_raw <span class="op">&gt;=</span><span class="st"> &quot;0.5&quot;</span>, <span class="st">&quot;Yes&quot;</span>, <span class="st">&quot;No&quot;</span>))</code></pre></div>
+</div>
+<div id="evaluation-matrix-nonet" class="section level4">
+<h4>Evaluation Matrix: nonet</h4>
+<p>Here Confusion matrix is being used to evaluate the performance of nonet, rf and nnet.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">nonet_eval &lt;-<span class="st"> </span><span class="kw">confusionMatrix</span>(prediction_nonet, testSet[,outcomeName])
+nonet_eval_rf &lt;-<span class="st"> </span><span class="kw">confusionMatrix</span>(predictions_rf_raw,testSet[,outcomeName])
+nonet_eval_nnet &lt;-<span class="st"> </span><span class="kw">confusionMatrix</span>(predictions_nnet_raw,testSet[,outcomeName])
+nonet_eval_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(nonet_eval<span class="op">$</span>table)
+nonet_eval_rf_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(nonet_eval_rf<span class="op">$</span>table)
+nonet_eval_nnet_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(nonet_eval_nnet<span class="op">$</span>table)</code></pre></div>
+</div>
+<div id="result-plotting-nonet_plot" class="section level4">
+<h4>Result Plotting: nonet_plot</h4>
+<p>Results can be plotted using the nonet_plot function. nonet_plot is being designed to provided different plot_type options to the user so that one can plot different visualization based on their needs.</p>
+<div id="nonet_plot-for-the-result-of-nonet_ensemble-models-predictions" class="section level5">
+<h5>nonet_plot for the result of nonet_ensemble models predictions</h5>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">plot_first &lt;-<span class="st"> </span><span class="kw">nonet_plot</span>(nonet_eval_df<span class="op">$</span>Prediction, nonet_eval_df<span class="op">$</span>Reference, nonet_eval_df, <span class="dt">plot_type =</span> <span class="st">&quot;point&quot;</span>)
+plot_first</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="nonet_plot-for-the-result-of-random-forest-models-predictions" class="section level5">
+<h5>nonet_plot for the result of random forest model’s predictions</h5>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">plot_second &lt;-<span class="st"> </span><span class="kw">nonet_plot</span>(nonet_eval_rf_df<span class="op">$</span>Prediction, nonet_eval_rf_df<span class="op">$</span>Reference, nonet_eval_rf_df, <span class="dt">plot_type =</span> <span class="st">&quot;boxplot&quot;</span>)
+plot_second</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="nonet_plot-for-the-result-of-neural-network-models-predictions" class="section level5">
+<h5>nonet_plot for the result of neural network model’s predictions</h5>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">plot_third &lt;-<span class="st"> </span><span class="kw">nonet_plot</span>(nonet_eval_nnet_df<span class="op">$</span>Prediction, nonet_eval_nnet_df<span class="op">$</span>Reference, nonet_eval_nnet_df, <span class="dt">plot_type =</span> <span class="st">&quot;density&quot;</span>)
+plot_third</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+</div>
+</div>
+<div id="conclusion" class="section level3">
+<h3>Conclusion</h3>
+<p>Above it can be seen that nonet_ensemble and nonet_plot can serve in a way that one do not need to worry about the outcome variables labels to compute the weights of weighted average ensemble solution.</p>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

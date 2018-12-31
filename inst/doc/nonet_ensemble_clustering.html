@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+<title>nonet_ensemble Clustering with nonet_plot</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">nonet_ensemble Clustering with nonet_plot</h1>
+
+
+
+<div id="nonet-provides-ensemble-capabilities-for-clustering-problems." class="section level3">
+<h3>nonet provides ensemble capabilities for Clustering problems.</h3>
+<p>Below example shows the step by step implementation of nonet_ensemble and nonet_plot functions in the context of clustering. We have used Bank Note authentication data set to predict the output class variable using Cluster package because it provides the probability of the input point to be in a specific cluster. Predictions from first GMM and second GMM model are being used as inputs to the nonet_ensemble in the list form.</p>
+<p>Let’s start:</p>
+<div id="load-the-required-libraries" class="section level4">
+<h4>Load the required libraries</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(caret)
+<span class="kw">library</span>(ggplot2)
+<span class="kw">library</span>(ClusterR)</code></pre></div>
+<pre><code>## Loading required package: gtools</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(nonet)</code></pre></div>
+<div id="setting-the-seed" class="section level5">
+<h5>Setting the seed</h5>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">1001</span>)</code></pre></div>
+</div>
+</div>
+<div id="load-the-banknote_authentication-dataset-and-explore-it." class="section level4">
+<h4>Load the banknote_authentication dataset and explore it.</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dataframe &lt;-<span class="st"> </span><span class="kw">data.frame</span>(banknote_authentication)</code></pre></div>
+<p>We can see above that class variable has int datatype, we need to convert it into factor.</p>
+</div>
+<div id="converting-datatype-of-class-variable-into-factors." class="section level4">
+<h4>Converting datatype of class variable into factors.</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dataframe<span class="op">$</span>class &lt;-<span class="st"> </span><span class="kw">as.factor</span>(dataframe<span class="op">$</span>class)</code></pre></div>
+</div>
+</div>
+<div id="first-gmm-model" class="section level3">
+<h3>First GMM Model</h3>
+<div id="splitting-the-data-into-train-and-test." class="section level4">
+<h4>Splitting the data into train and test.</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Spliting training set into two parts based on outcome: 75% and 25%</span>
+index &lt;-<span class="st"> </span><span class="kw">createDataPartition</span>(dataframe<span class="op">$</span>class, <span class="dt">p=</span><span class="fl">0.75</span>, <span class="dt">list=</span><span class="ot">FALSE</span>)
+trainSet &lt;-<span class="st"> </span>dataframe[ index,]
+testSet &lt;-<span class="st"> </span>dataframe[<span class="op">-</span>index,]</code></pre></div>
+</div>
+<div id="exploring-the-dimensions-of-trainset-and-testset" class="section level4">
+<h4>Exploring the dimensions of trainSet and testSet</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dim</span>(trainSet); <span class="kw">dim</span>(testSet)</code></pre></div>
+<pre><code>## [1] 1030    5</code></pre>
+<pre><code>## [1] 342   5</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(trainSet)</code></pre></div>
+<pre><code>## 'data.frame':    1030 obs. of  5 variables:
+##  $ variance: num  4.546 3.866 3.457 0.329 4.368 ...
+##  $ skewness: num  8.17 -2.64 9.52 -4.46 9.67 ...
+##  $ curtosis: num  -2.46 1.92 -4.01 4.57 -3.96 ...
+##  $ entropy : num  -1.462 0.106 -3.594 -0.989 -3.163 ...
+##  $ class   : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(testSet)</code></pre></div>
+<pre><code>## 'data.frame':    342 obs. of  5 variables:
+##  $ variance: num  3.622 3.203 1.225 -1.577 0.804 ...
+##  $ skewness: num  8.67 5.76 8.78 10.84 2.85 ...
+##  $ curtosis: num  -2.807 -0.753 -2.213 2.546 4.344 ...
+##  $ entropy : num  -0.447 -0.613 -0.806 -2.936 0.602 ...
+##  $ class   : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
+</div>
+</div>
+<div id="feature-selection-using-rfe-in-caret" class="section level1">
+<h1>Feature selection using rfe in caret</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">control &lt;-<span class="st"> </span><span class="kw">rfeControl</span>(<span class="dt">functions =</span> rfFuncs,
+                   <span class="dt">method =</span> <span class="st">&quot;repeatedcv&quot;</span>,
+                   <span class="dt">repeats =</span> <span class="dv">3</span>,
+                   <span class="dt">verbose =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">outcomeName&lt;-<span class="st">'class'</span>
+predictors&lt;-<span class="kw">c</span>(<span class="st">&quot;variance&quot;</span>, <span class="st">&quot;curtosis&quot;</span>, <span class="st">&quot;entropy&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(trainSet[,predictors])</code></pre></div>
+<pre><code>##   variance curtosis  entropy
+## 2  4.54590 -2.45860 -1.46210
+## 3  3.86600  1.92420  0.10645
+## 4  3.45660 -4.01120 -3.59440
+## 5  0.32924  4.57180 -0.98880
+## 6  4.36840 -3.96060 -3.16250
+## 7  3.59120  0.72888  0.56421</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(trainSet[,outcomeName])</code></pre></div>
+<pre><code>## [1] 0 0 0 0 0 0
+## Levels: 0 1</code></pre>
+<div id="model-training" class="section level4">
+<h4>Model Training</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">900</span>)
+gmm_first &lt;-<span class="st"> </span><span class="kw">GMM</span>(trainSet[,predictors], <span class="dv">2</span>, <span class="dt">dist_mode =</span> <span class="st">&quot;maha_dist&quot;</span>, <span class="dt">seed_mode =</span> <span class="st">&quot;random_subset&quot;</span>, <span class="dt">km_iter =</span> <span class="dv">10</span>, <span class="dt">em_iter =</span> <span class="dv">10</span>, <span class="dt">verbose =</span> F)          </code></pre></div>
+</div>
+<div id="predictions-using-first-gmm" class="section level4">
+<h4>#### Predictions using first GMM</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">predict_clustering_first &lt;-<span class="st"> </span><span class="kw">predict_GMM</span>(trainSet[,predictors], gmm_first<span class="op">$</span>centroids, gmm_first<span class="op">$</span>covariance_matrices, gmm_first<span class="op">$</span>weights) 
+<span class="kw">head</span>(predict_clustering_first<span class="op">$</span>cluster_proba[, <span class="dv">2</span>])</code></pre></div>
+<pre><code>## [1] 0.9997857 0.9991832 0.9962177 0.7541448 0.9992900 0.9990455</code></pre>
+</div>
+<div id="converting-probability-into-classes" class="section level4">
+<h4>Converting probability into classes</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">predict_cluster_first_class &lt;-<span class="st"> </span><span class="kw">as.factor</span>(<span class="kw">ifelse</span>(predict_clustering_first<span class="op">$</span>cluster_proba[, <span class="dv">2</span>] <span class="op">&gt;=</span><span class="st"> &quot;0.5&quot;</span>, <span class="st">&quot;1&quot;</span>, <span class="st">&quot;0&quot;</span>))
+<span class="kw">head</span>(predict_cluster_first_class)</code></pre></div>
+<pre><code>## [1] 1 1 1 1 1 1
+## Levels: 0 1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(predict_clustering_first<span class="op">$</span>cluster_labels)</code></pre></div>
+<pre><code>## [1] 1 1 1 1 1 1</code></pre>
+</div>
+<div id="second-gmm-model" class="section level3">
+<h3>Second GMM Model</h3>
+<div id="spliting-training-set-into-two-parts-based-on-outcome-75-and-25" class="section level4">
+<h4>Spliting training set into two parts based on outcome: 75% and 25%</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">index &lt;-<span class="st"> </span><span class="kw">createDataPartition</span>(dataframe<span class="op">$</span>class, <span class="dt">p=</span><span class="fl">0.75</span>, <span class="dt">list=</span><span class="ot">FALSE</span>)
+trainSet &lt;-<span class="st"> </span>dataframe[ index,]
+testSet &lt;-<span class="st"> </span>dataframe[<span class="op">-</span>index,]</code></pre></div>
+</div>
+<div id="exploring-the-dimensions-of-trainset-and-testset-1" class="section level4">
+<h4>Exploring the dimensions of trainSet and testSet</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dim</span>(trainSet); <span class="kw">dim</span>(testSet)</code></pre></div>
+<pre><code>## [1] 1030    5</code></pre>
+<pre><code>## [1] 342   5</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(trainSet)</code></pre></div>
+<pre><code>## 'data.frame':    1030 obs. of  5 variables:
+##  $ variance: num  3.62 4.55 3.87 3.46 4.37 ...
+##  $ skewness: num  8.67 8.17 -2.64 9.52 9.67 ...
+##  $ curtosis: num  -2.81 -2.46 1.92 -4.01 -3.96 ...
+##  $ entropy : num  -0.447 -1.462 0.106 -3.594 -3.163 ...
+##  $ class   : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(testSet)</code></pre></div>
+<pre><code>## 'data.frame':    342 obs. of  5 variables:
+##  $ variance: num  0.329 3.203 1.899 -1.577 4.891 ...
+##  $ skewness: num  -4.46 5.76 7.66 10.84 -3.36 ...
+##  $ curtosis: num  4.572 -0.753 0.154 2.546 3.42 ...
+##  $ entropy : num  -0.989 -0.613 -3.111 -2.936 1.091 ...
+##  $ class   : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
+</div>
+<div id="feature-selection-using-rfe-in-caret-1" class="section level4">
+<h4>Feature selection using rfe in caret</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">control &lt;-<span class="st"> </span><span class="kw">rfeControl</span>(<span class="dt">functions =</span> rfFuncs,
+                   <span class="dt">method =</span> <span class="st">&quot;repeatedcv&quot;</span>,
+                   <span class="dt">repeats =</span> <span class="dv">3</span>,
+                   <span class="dt">verbose =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">outcomeName&lt;-<span class="st">'class'</span>
+predictors&lt;-<span class="kw">c</span>(<span class="st">&quot;skewness&quot;</span>, <span class="st">&quot;curtosis&quot;</span>, <span class="st">&quot;entropy&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(trainSet[,predictors])</code></pre></div>
+<pre><code>##   skewness curtosis  entropy
+## 1   8.6661 -2.80730 -0.44699
+## 2   8.1674 -2.45860 -1.46210
+## 3  -2.6383  1.92420  0.10645
+## 4   9.5228 -4.01120 -3.59440
+## 6   9.6718 -3.96060 -3.16250
+## 7   3.0129  0.72888  0.56421</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(trainSet[,outcomeName])</code></pre></div>
+<pre><code>## [1] 0 0 0 0 0 0
+## Levels: 0 1</code></pre>
+</div>
+<div id="model-training-second" class="section level4">
+<h4>Model Training: Second</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">423</span>)
+gmm_second &lt;-<span class="st"> </span><span class="kw">GMM</span>(trainSet[,predictors], <span class="dv">2</span>, <span class="dt">dist_mode =</span> <span class="st">&quot;maha_dist&quot;</span>, <span class="dt">seed_mode =</span> <span class="st">&quot;random_subset&quot;</span>, <span class="dt">km_iter =</span> <span class="dv">10</span>, <span class="dt">em_iter =</span> <span class="dv">10</span>, <span class="dt">verbose =</span> F)          </code></pre></div>
+</div>
+<div id="predictions-using-second-gmm" class="section level4">
+<h4>Predictions using Second GMM</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">predict_clustering_Second &lt;-<span class="st"> </span><span class="kw">predict_GMM</span>(trainSet[,predictors], gmm_second<span class="op">$</span>centroids, gmm_second<span class="op">$</span>covariance_matrices, gmm_second<span class="op">$</span>weights) 
+<span class="kw">head</span>(predict_clustering_Second<span class="op">$</span>cluster_proba[, <span class="dv">2</span>])</code></pre></div>
+<pre><code>## [1] 0.987314759 0.995678444 0.003361081 0.999983188 0.999946316 0.393450214</code></pre>
+</div>
+<div id="converting-prediction-probabilities-into-classes" class="section level4">
+<h4>Converting Prediction Probabilities into classes</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">predict_cluster_Second_class &lt;-<span class="st"> </span><span class="kw">as.factor</span>(<span class="kw">ifelse</span>(predict_clustering_Second<span class="op">$</span>cluster_proba[, <span class="dv">2</span>] <span class="op">&gt;=</span><span class="st"> &quot;0.5&quot;</span>, <span class="st">&quot;1&quot;</span>, <span class="st">&quot;0&quot;</span>))
+<span class="kw">head</span>(predict_cluster_Second_class)</code></pre></div>
+<pre><code>## [1] 1 1 0 1 1 0
+## Levels: 0 1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(predict_clustering_Second<span class="op">$</span>cluster_labels)</code></pre></div>
+<pre><code>## [1] 1 1 0 1 1 0</code></pre>
+</div>
+<div id="create-the-stack-of-predictions" class="section level4">
+<h4>Create the stack of predictions</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Stack_object &lt;-<span class="st"> </span><span class="kw">list</span>(predict_clustering_first<span class="op">$</span>cluster_proba[, <span class="dv">2</span>], predict_clustering_Second<span class="op">$</span>cluster_proba[, <span class="dv">2</span>])</code></pre></div>
+</div>
+<div id="applying-naming-to-the-stack_object" class="section level4">
+<h4>Applying naming to the Stack_object</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">names</span>(Stack_object) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Cluster_first&quot;</span>, <span class="st">&quot;Cluster_second&quot;</span>)</code></pre></div>
+</div>
+<div id="nonet_ensemble" class="section level4">
+<h4>nonet_ensemble</h4>
+<p>Now we need to apply the nonet_ensemble method by supplying list object and best model name as input. Note that We have not provided training or test outcome labels to compute the weights in the weighted average ensemble method, which is being used inside the none_ensemble. Thus it uses best models prediction to compute the weights in the weighted average ensemble.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">prediction_nonet &lt;-<span class="st"> </span><span class="kw">nonet_ensemble</span>(Stack_object, <span class="st">&quot;Cluster_second&quot;</span>)</code></pre></div>
+</div>
+<div id="result-plotting-nonet_plot" class="section level4">
+<h4>Result Plotting: nonet_plot</h4>
+<p>Results can be plotted using the nonet_plot function. nonet_plot is being designed to provided different plot_type options to the user so that one can plot different visualization based on their needs.</p>
+</div>
+<div id="creating-the-list-of-cluster-probabilities" class="section level4">
+<h4>Creating the list of cluster probabilities</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Prediction_data &lt;-<span class="st"> </span><span class="kw">list</span>(prediction_nonet, predict_clustering_first<span class="op">$</span>cluster_proba[, <span class="dv">2</span>], predict_clustering_Second<span class="op">$</span>cluster_proba[, <span class="dv">2</span>])</code></pre></div>
+</div>
+<div id="applying-name-to-the-predictions" class="section level4">
+<h4>Applying name to the predictions</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">names</span>(Prediction_data) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;pred_nonet&quot;</span>, <span class="st">&quot;pred_clust_first&quot;</span>, <span class="st">&quot;pred_clust_second&quot;</span>)</code></pre></div>
+</div>
+<div id="converting-list-object-into-dataframe" class="section level4">
+<h4>Converting list object into dataframe</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Prediction_dataframe &lt;-<span class="st"> </span><span class="kw">data.frame</span>(Prediction_data)
+<span class="kw">head</span>(Prediction_dataframe)</code></pre></div>
+<pre><code>##   pred_nonet pred_clust_first pred_clust_second
+## 1  1.1403889        0.9997857       0.987314759
+## 2  1.1486603        0.9991832       0.995678444
+## 3  0.1558889        0.9962177       0.003361081
+## 4  1.1154480        0.7541448       0.999983188
+## 5  1.1529445        0.9992900       0.999946316
+## 6  0.5464110        0.9990455       0.393450214</code></pre>
+<div id="nonet_plot-for-nonet_ensemble-models-predictions-in-histogram" class="section level5">
+<h5>nonet_plot for nonet_ensemble model’s predictions in histogram</h5>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">plot_first &lt;-<span class="st"> </span><span class="kw">nonet_plot</span>(Prediction_dataframe<span class="op">$</span>pred_nonet, Prediction_dataframe<span class="op">$</span>pred_clust_first, Prediction_dataframe, <span class="dt">plot_type =</span> <span class="st">&quot;hist&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">plot_first</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="nonet_plot-for-the-first-gmm-models-predictions-in-histogram" class="section level5">
+<h5>nonet_plot for the first GMM model’s predictions in histogram</h5>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">plot_second &lt;-<span class="st"> </span><span class="kw">nonet_plot</span>(Prediction_dataframe<span class="op">$</span>pred_clust_first,  Prediction_dataframe<span class="op">$</span>pred_clust_second, Prediction_dataframe, <span class="dt">plot_type =</span> <span class="st">&quot;hist&quot;</span>)
+plot_second</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="nonet_plot-for-the-second-gmm-models-predictions-in-histogram" class="section level5">
+<h5>nonet_plot for the Second GMM model’s predictions in histogram</h5>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">plot_third &lt;-<span class="st"> </span><span class="kw">nonet_plot</span>(Prediction_dataframe<span class="op">$</span>pred_clust_second,  Prediction_dataframe<span class="op">$</span>pred_clust_first, Prediction_dataframe, <span class="dt">plot_type =</span> <span class="st">&quot;hist&quot;</span>)
+plot_third</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+</div>
+</div>
+<div id="conclusion" class="section level3">
+<h3>Conclusion</h3>
+<p>Above it can be seen that nonet_ensemble and nonet_plot can serve in a way that one do not need to worry about the outcome variables labels to compute the weights of weighted average ensemble solution.</p>
+</div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

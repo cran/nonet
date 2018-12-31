@@ -1,0 +1,153 @@
+---
+title: "nonet_ensemble classification with nonet_plot"
+output: html_vignette
+vignette: >
+  %\VignetteIndexEntry{nonet ensemble classification with nonet plot}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+### nonet provides ensemble capabilities for classification problems. 
+
+Below example shows the step by step implementation of nonet_ensemble and nonet_plot functions in the context of classification.
+We have used Bank Note authentication data set to predict the output class variable using random forest and neural network models.
+Predictions from random forest model and neural network model are being used as inputs to the nonet_ensemble in the list form.
+
+Let's start:
+
+#### Load the required libraries
+
+```{r}
+library(caret)
+library(ggplot2)
+library(nonet)
+```
+
+#### Load the banknote_authentication dataset and explore it.
+```{r}
+dataframe <- data.frame(banknote_authentication)
+head(dataframe)
+```
+
+We can see above that class variable has int datatype, we need to convert it into factor so that classification models can be trained on that.
+
+#### Converting datatype of class variable into factor which have two classes Yes and No.
+```{r}
+dataframe$class <- as.factor(ifelse(dataframe$class >= 1, 'Yes', 'No'))
+dataframe <- data.frame(dataframe)
+head(dataframe)
+```
+
+#### Spliting the dataset into train and test. 
+```{r}
+index <- createDataPartition(dataframe$class, p=0.75, list=FALSE)
+trainSet <- dataframe[ index,]
+testSet <- dataframe[-index,]
+```
+
+
+#### Feature selection using rfe in caret
+```{r}
+control <- rfeControl(functions = rfFuncs,
+  method = "repeatedcv",
+  repeats = 3,
+  verbose = FALSE)
+
+```
+
+```{r}
+outcomeName <- 'class'
+predictors <- c("variance", "skewness", "curtosis", "entropy")
+```
+
+#### Model Training: Random forest
+```{r, message = FALSE, results = "hide"}
+banknote_rf <- train(trainSet[,predictors],trainSet[,outcomeName],method='rf')
+```
+#### Model Training: neural network
+```{r, message = FALSE, results = "hide"}
+banknote_nnet <- train(trainSet[,predictors],trainSet[,outcomeName],method='nnet')
+```
+
+
+Now we need to predict the outcome on testSet using the trained models
+
+#### Predictions on testSet in probabilities
+```{r}
+predictions_rf <- predict.train(object=banknote_rf,testSet[,predictors],type="prob")
+predictions_nnet <- predict.train(object=banknote_nnet,testSet[,predictors],type="prob")
+```
+
+#### Predictions on testSet in raw form i.e in levels
+```{r}
+predictions_rf_raw <- predict.train(object=banknote_rf,testSet[,predictors],type="raw")
+predictions_nnet_raw <- predict.train(object=banknote_nnet,testSet[,predictors],type="raw")
+```
+
+#### Create the stack of prediction probabilities for the class of Yes
+```{r}
+Stack_object <- list(predictions_rf$Yes, predictions_nnet$Yes)
+```
+
+
+#### Applying naming to the Stack_object
+```{r}
+names(Stack_object) <- c("model_rf", "model_nnet")
+```
+
+#### Convet list object into dataframe
+```{r}
+Stack_object_df <- data.frame(Stack_object)
+```
+#### nonet_ensemble
+Now we need to apply the nonet_ensemble method by supplying list object and best model name as input.
+Note that We have not provided training or test outcome labels to compute the weights in the weighted average ensemble method, which is being used inside the none_ensemble. Thus it uses best models prediction to compute the weights in the weighted average ensemble.
+```{r}
+prediction_nonet_raw <- nonet_ensemble(Stack_object, "model_nnet")
+```
+
+#### Convert probabilities into factor levels.
+```{r}
+prediction_nonet <- as.factor(ifelse(prediction_nonet_raw >= "0.5", "Yes", "No"))
+```
+
+#### Evaluation Matrix: nonet
+
+Here Confusion matrix is being used to evaluate the performance of nonet, rf and nnet.
+```{r}
+nonet_eval <- confusionMatrix(prediction_nonet, testSet[,outcomeName])
+nonet_eval_rf <- confusionMatrix(predictions_rf_raw,testSet[,outcomeName])
+nonet_eval_nnet <- confusionMatrix(predictions_nnet_raw,testSet[,outcomeName])
+nonet_eval_df <- data.frame(nonet_eval$table)
+nonet_eval_rf_df <- data.frame(nonet_eval_rf$table)
+nonet_eval_nnet_df <- data.frame(nonet_eval_nnet$table)
+```
+
+#### Result Plotting: nonet_plot
+
+Results can be plotted using the nonet_plot function.
+nonet_plot is being designed to provided different plot_type options to the user so that one can plot different visualization based on their needs.
+
+##### nonet_plot for the result of nonet_ensemble  models predictions
+```{r, warning = FALSE}
+plot_first <- nonet_plot(nonet_eval_df$Prediction, nonet_eval_df$Reference, nonet_eval_df, plot_type = "point")
+plot_first
+```
+
+
+##### nonet_plot for the result of random forest model's predictions
+```{r, warning = FALSE}
+plot_second <- nonet_plot(nonet_eval_rf_df$Prediction, nonet_eval_rf_df$Reference, nonet_eval_rf_df, plot_type = "boxplot")
+plot_second
+```
+
+
+##### nonet_plot for the result of neural network model's predictions
+```{r, warning = FALSE}
+plot_third <- nonet_plot(nonet_eval_nnet_df$Prediction, nonet_eval_nnet_df$Reference, nonet_eval_nnet_df, plot_type = "density")
+plot_third
+```
+ 
+### Conclusion
+ 
+Above it can be seen that nonet_ensemble and nonet_plot can serve in a way that one do not need to worry about the outcome variables labels to compute the weights of weighted average ensemble solution. 
