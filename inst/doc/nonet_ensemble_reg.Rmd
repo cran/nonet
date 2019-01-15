@@ -138,8 +138,3 @@ plot_second
 ### Conclusion
  
 Above it can be seen that nonet_ensemble and nonet_plot can serve in a way that one do not need to worry about the outcome variables labels to compute the weights of weighted average ensemble solution. 
-
-
-
-
-

@@ -61,7 +61,7 @@ nonet_plot <- function (x, y, dataframe, plot_type = NULL , nonet_size = 20, non
       if (plot_type == "hist") {
         plotted <- ggplot(dataframe, aes(x)) + geom_histogram(bins = nonet_bins)
         
-      }
+	   }
       else{
         if (plot_type == "NULL") {
            plotted <- ggplot(data = dataframe, aes(x = x, y = y)) +
@@ -94,4 +94,7 @@ nonet_plot <- function (x, y, dataframe, plot_type = NULL , nonet_size = 20, non
     }
   }
 }
+
+
+
 
